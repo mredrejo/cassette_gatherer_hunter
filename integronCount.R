@@ -109,8 +109,9 @@ process_feature_counts <- function(matched_list, bam_dir="mapped", results_dir="
       message("Results directory for sample already exists.")
     }
     #log
+    sink(paste0(results_dir,"/", matched_list[i], "/", matched_list[i],".log"), append=FALSE, split=TRUE)
     sink(paste0(results_dir,"/", matched_list[i], "/", matched_list[i],".log"), append=TRUE, split=TRUE)
-    paste(Sys.Date(),"\n")
+    paste(Sys.Date(),"\n","\n")
     #START processing  
       # Get BAM file path and annotations for this sample
       bam_file <- file.path(bam_dir, paste0(matched_list[i], "_mapped.bam"))
@@ -240,6 +241,10 @@ process_feature_counts <- function(matched_list, bam_dir="mapped", results_dir="
         cassettes <- stringr::str_count(multimap$V4, "Cassette")
         stat_cassette <- as.data.frame(table(cassettes))
         stat_cassette$perc <- stat_cassette$Freq*100/sum(stat_cassette$Freq)
+        # Write cassette table
+        write.table(stat_cassette, paste0(results_dir,"/",matched_list[i],"/",matched_list[i],"_mapped_reads_casette.csv"),
+                    quote = FALSE, sep = ";", row.names = FALSE)
+        #plot
         reads_cas <- ggplot(data=stat_cassette)+geom_bar(aes(x=cassettes,y=Freq),stat="identity", col="black",fill="grey60") + 
           geom_text(aes(x=cassettes,y=Freq, label=paste0(round(perc,2),"%")),vjust = -1, nudge_y  = -.5)+
           ylim(0,max(stat_cassette$Freq)*1.1)+
@@ -254,10 +259,14 @@ process_feature_counts <- function(matched_list, bam_dir="mapped", results_dir="
         #       width = 6, height = 5)
         
         #number of CDS per read
-        genome_tag <- unique(sub("_.*","",sample_annot$GeneID))[which(unique(sub("_.*","",sample_annot$GeneID))!="attC" & unique(sub("_.*","",sample_annot$GeneID))!= "Cassette" & unique(sub("_.*","",sample_annot$GeneID))!= "attI")]
+        genome_tag <- unique(sub("_.*","",sample_annot$GeneID[!grepl("Integron", sample_annot$Annotation)]))
         CDS <- stringr::str_count(multimap$V4, paste0(genome_tag,"_"))
         stat_CDS <- as.data.frame(table(CDS))
         stat_CDS$perc <- stat_CDS$Freq*100/sum(stat_CDS$Freq)
+        # Write CDS table
+        write.table(stat_CDS, paste0(results_dir,"/",matched_list[i],"/",matched_list[i],"_mapped_reads_CDS.csv"),
+                    quote = FALSE, sep = ";", row.names = FALSE)
+        #plot
         reads_CDS <- ggplot(data=stat_CDS)+geom_bar(aes(x=CDS,y=Freq),stat="identity", col="black",fill="grey60") + 
           geom_text(aes(x=CDS,y=Freq, label=paste0(round(perc,2),"%")),vjust = -1, nudge_y  = -.5)+
           ylim(0,max(stat_CDS$Freq)*1.1)+

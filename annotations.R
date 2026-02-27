@@ -47,7 +47,7 @@ process_annotations <-  function(strain, bakta_file, integron_finder_file, manua
   # Read integron_finder results
   integrons <- fread(integron_finder_file, skip = 2)
   # Keep only attC and integrase and rename columns
-  integrons <- subset(integrons,annotation=="attC") #|annotation=="intI")
+  integrons <- subset(integrons,annotation=="attC" | annotation=="intI")
   integrons <- data.frame(integrons[,c(1:6,11)])
   colnames(integrons) <- c("ID_integron","Chr", "GeneID", "Start", "End", "Strand","type")
   integrons$Strand <- ifelse(integrons$Strand == 1, '+', '-')
@@ -98,24 +98,28 @@ process_annotations <-  function(strain, bakta_file, integron_finder_file, manua
     }
   }
  
-  # Add cassette annotations as inter-attC segments
+  # Adding cassette annotations as inter-attC segments
   for(integron in unique(integrons$merge)) {
     chr_attcs <- integrons[integrons$merge == integron, ]
     if(nrow(chr_attcs) > 1) {
       for(i in 1:(nrow(chr_attcs)-1)) {
-        if(chr_attcs[i, "End"] < chr_attcs[(i+1), "Start"]) {
-          new_cassette <- data.frame(
+        #numbers according to integron orientation
+        if(chr_attcs[grep("\\battC_1\\b",chr_attcs[,3]), "Strand"] == "+") { #take orientation from 'attC_1'
+          kk = paste0("Cassette_", i)
+        } else {
+          kk = paste0("Cassette_", nrow(chr_attcs)-i)
+        }
+        new_cassette <- data.frame(
             ID_integron = integron,
-            Chr = chr_attcs$Chr,
-            GeneID = paste0("Cassette_", i),
+            Chr = chr_attcs[i,"Chr"],
+            GeneID = kk,
             Start = as.numeric(chr_attcs[i, "End"]) + 1,
             End = as.numeric(chr_attcs[(i+1), "Start"]) - 1,
-            Strand = chr_attcs[i+1, "Strand"],
-            merge = integron,
-            type = chr_attcs$type
+            Strand = chr_attcs[grep("\\battC_1\\b",chr_attcs[,3]), "Strand"], #all cassettes the orientation of attC_1
+            type = chr_attcs[i,"type"],
+            merge = integron
           )
-          integrons <- rbind(integrons[,1:8], new_cassette)
-        }
+        integrons <- rbind(integrons[,1:8], new_cassette)
       }
     }
   }
