@@ -2,6 +2,8 @@
 
 This repository contains the code for analysing long-read sequencing of a new biotechnological tool for capturing integron cassettes. It is the result of a collaboration between my lab and the [MBA lab](https://ucm.es/mbalab) lab, who conceived and developed the tool. Further details can be found in a paper currently in preparation.
 
+All raw sequencing and analysis data generated for this project can be found on a public Zenodo Data Repository: <https://doi.org/10.5281/zenodo.18864999>
+
 ### Workflow description
 
 The workflow for processing and mapping the reads is shown below. This multi-step workflow requires the execution of each step sequentially. The information provided here should be sufficient for any researcher with experience of using Conda, Linux Bash and R, and who has access to a laptop computer running Linux or macOS (we have not tested WSL, but it should work as well).
