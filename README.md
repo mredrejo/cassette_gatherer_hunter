@@ -1,6 +1,6 @@
-# Cassette harvester
+# Cassette Gathered & Cassette Hunter tools
 
-This repository contains the code for analysing long-read sequencing of a new biotechnological tool for capturing integron cassettes. It is the result of a collaboration between my lab and the [MBA lab](https://ucm.es/mbalab) lab, who conceived and developed the tool. Further details can be found in a paper currently in preparation.
+This repository contains the code for analysing long-read sequencing of a new biotechnological tools for capturing integron cassettes. It is the result of a collaboration between my lab and the [MBA lab](https://ucm.es/mbalab) lab, who conceived and developed the tool. Further details can be found in a paper currently in preparation.
 
 All raw sequencing and analysis data generated for this project can be found on a public Zenodo Data Repository: <https://doi.org/10.5281/zenodo.18864999>
 
